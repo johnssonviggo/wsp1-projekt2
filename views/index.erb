@@ -7,6 +7,29 @@
     <link rel="stylesheet" type="text/css" href="/style.css?<%=Time.now.to_i%>">
 </head>
 <body>
-  <img src="/img/glhf.png">
+  <nav>
+        <ul>
+            <li><a href="/">Logga in</a></li>
+            <li><a href="/logout">Logga ut</a></li>
+            <li><a href="/admin">Admin</a></li>
+        </ul>
+    </nav>
+
+
+  <h2>Shopping Lista</h2>
+
+    <button class = "add_delete">Lägg till!</button>
+    <button class = "add_delete">Ta Bort!</button>
+
+
+  <%= @todos %>
+
+  <ul>
+<% @todos.each do |todo| %>
+  <li>
+    <%= todo['id']%> <%= todo['name'] %>
+    </li>
+<% end %>
+</ul>
 </body>
 </html>
