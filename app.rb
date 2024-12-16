@@ -18,68 +18,54 @@ class App < Sinatra::Base
     end
 
     get '/' do
-        if session[:user_id]
-            erb(:"admin/index")
-        else
-            redirect "/todosc"
-        end
+        redirect "/todos"
     end
-
-    post '/testpasswcreate' do
-        plain_password = params[:plainpassw]
-        password_hashed = BCrypt::Password.create(plain_password)
-        p password_hashed
-    end
-
-    get '/admin' do
-        if session[:user_id]
-            erb(:"admin/index")
-        else
-            p "/admin: Access Denied"
-            Status 401
-            redirect '/unauthorized'
-        end
-    end
-
-    get '/unauthorized' do
-        erb(:unauthorized)
-    end
-
-    post '/login' do
-        request_username = params[:username]
-        request_plain_password = params[:password]
-
-        user = db.execute("SELECT *
-                            FROM users
-                            WHERE username = ?",
-                            request_username).first
-
-        unless user
-            p "/login : Invalid username."
-            status 401
-            redirect '/unauthorized'
-        end
-        db_id = user["id"].to_i
-        db_password_hashed = user["password"].to_i
-
-        bcrypt_db_password = BCrypt::Password.new(db_password_hashed)
-        if bcrypt_db_password == request_plain_password
-            p "/login : Logged in -> redirecting to admin"
-            session[:user_id] = db_id
-            redirect '/admin'
-        else
-            p "/login : Invalid password."
-            status 401
-            redirect '/unauthorized'
-        end
-    end
-
 
     get '/todos' do
         @todos = db.execute('SELECT * FROM todos')
         p @todos
         erb(:"index")
     end
+
+    post '/todos' do
+            #läs datan från formuläret
+        name = params["name"]
+        description = params["description"]
+            #spara datan i databasen
+        db.execute("INSERT INTO todos (name, description) VALUES(?,?)",
+                    [name, description])
+            #redirect '/todos'
+        redirect("/todos")
+    end
+
+    get '/todos/:id/edit' do |id|
+        #hämta info databas för id
+        name = params["name"]
+        description = params["description"]
+        #fyll formuläret i edit.erb
+        @todo = db.execute('SELECT * FROM todos WHERE id = ?', id.to_i).first
+
+        erb(:'edit')
+    end
+
+
+    post '/todos/:id/update' do |id|
+        name = params["name"]
+        description = params["description"]
+
+        db.execute('UPDATE todos SET name=?, description=? WHERE id = ?',
+                    [name, description, id])
+
+        redirect('/todos')
+    end
+
+    post '/todos/:id/delete' do |id|
+        db.execute('DELETE FROM todos WHERE id = ?', id)
+
+        redirect('/todos')
+    end
+
+
 
     get '/:id' do | id |
         @todos = db.execute('SELECT *
@@ -89,9 +75,12 @@ class App < Sinatra::Base
         erb(:"fruits/show")
     end
 
+    post '/login' do
+    end
+
     get '/logout' do
         p "/logout : logging out"
-        session.clear
+        #session.clear
         redirect '/'
     end
 

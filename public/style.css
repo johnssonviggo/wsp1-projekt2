@@ -1,25 +1,14 @@
-body {
-  font-family: sans-serif;
-  color: black;
-  background-color: #f1f1f1;
-  font-size: 40px;
-  margin: 1em;
-}
-
 form {
   display: inline-block;
 }
 
-h1 {
-  margin-left: 10px;
-}
 nav {
   margin-bottom: 50px;
 }
 
 nav ul {
   list-style-type: none;
-  padding: 10px;
+  padding: 0;
   margin: 0;
 }
 
@@ -41,8 +30,11 @@ a {
   color: #000000;
 }
 
-button {
+.form-align > div {
+  width: 100%;
   display: flex;
-  font-size: 40px;
-  margin-bottom: 20px;
+  justify-content: space-between;
 }
+
+
+
